@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
+const fetch = require('node-fetch')
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -34,6 +35,22 @@ app.whenReady().then(() => {
 
   ipcMain.handle('books:get', (event, id) => {
     return db.getBook(id)
+  })
+
+  ipcMain.handle('books:search', async (event, query) => {
+    const url = `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}&limit=8`
+    const response = await fetch(url)
+    const data = await response.json()
+
+    return data.docs.map(book => ({
+      title: book.title,
+      author: book.author_name ? book.author_name[0] : 'Unknown',
+      year: book.first_publish_year || null,
+      cover_url: book.cover_i
+        ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
+        : null,
+      olid: book.key
+    }))
   })
 
   createWindow()

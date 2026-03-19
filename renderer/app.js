@@ -14,12 +14,60 @@ navButtons.forEach(btn => {
   })
 })
 
+// API SEARCH
+document.getElementById('btn-api-search').addEventListener('click', async () => {
+  const query = document.getElementById('api-search-input').value.trim()
+  if (!query) return
+
+  const resultsDiv = document.getElementById('search-results')
+  resultsDiv.innerHTML = '<p style="color: var(--text-muted)">Searching...</p>'
+
+  const results = await window.api.books.search(query)
+
+  if (!results || results.length === 0) {
+    resultsDiv.innerHTML = '<p style="color: var(--text-muted)">No results found.</p>'
+    return
+  }
+
+  resultsDiv.innerHTML = ''
+
+  results.forEach(result => {
+    const card = document.createElement('div')
+    card.className = 'search-result-card'
+
+    const coverHTML = result.cover_url
+      ? `<img src="${result.cover_url}" alt="${result.title}">`
+      : `<div class="no-cover">${result.title}</div>`
+
+    card.innerHTML = `
+      ${coverHTML}
+      <div class="result-title">${result.title}</div>
+      <div class="result-author">${result.author}</div>
+    `
+
+    card.addEventListener('click', () => {
+      document.getElementById('input-title').value = result.title
+      document.getElementById('input-author').value = result.author
+      document.getElementById('input-cover-url').value = result.cover_url || ''
+      resultsDiv.innerHTML = ''
+      document.getElementById('api-search-input').value = ''
+    })
+
+    resultsDiv.appendChild(card)
+  })
+})
+
+// Also allow pressing Enter in the search box
+document.getElementById('api-search-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('btn-api-search').click()
+})
+
 // ADD BOOK
 document.getElementById('btn-add-book').addEventListener('click', async () => {
   const book = {
     title: document.getElementById('input-title').value,
     author: document.getElementById('input-author').value,
-    cover_url: null,
+    cover_url: document.getElementById('input-cover-url').value || null,
     status: document.getElementById('input-status').value,
     format: document.getElementById('input-format').value,
     genre: document.getElementById('input-genre').value,
