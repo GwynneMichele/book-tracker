@@ -20,6 +20,7 @@ navButtons.forEach(btn => {
 // STATE
 let currentBookId = null
 let editingBookId = null
+let currentBook = null
 let allBooks = []
 
 // API SEARCH
@@ -234,6 +235,7 @@ document.getElementById('btn-clear-filters').addEventListener('click', () => {
 // DETAIL VIEW
 function showDetail(book) {
   currentBookId = book.id
+  currentBook = book
 
   const coverHTML = book.cover_url
     ? `<img id="detail-cover" src="${book.cover_url}" alt="${book.title}">`
@@ -340,6 +342,50 @@ function populateEditForm(book) {
 
 document.getElementById('btn-back').addEventListener('click', () => {
   navigateTo('library')
+})
+
+// KEYBOARD SHORTCUTS
+document.addEventListener('keydown', (e) => {
+  const activeElement = document.activeElement
+  const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeElement.tagName)
+
+  if (e.key === 'Escape') {
+    if (editingBookId) {
+      editingBookId = null
+      document.querySelectorAll('#add-book input, #add-book textarea').forEach(el => el.value = '')
+      document.getElementById('input-status').value = 'want'
+      document.getElementById('input-format').value = 'physical'
+      document.getElementById('btn-add-book').textContent = 'Add Book'
+      document.getElementById('add-book').querySelector('h2').textContent = 'Add a Book'
+      if (currentBook) showDetail(currentBook)
+    } else {
+      navigateTo('library')
+    }
+    return
+  }
+
+  if (isTyping) return
+
+  if (e.ctrlKey && e.key === 'l') {
+    e.preventDefault()
+    navigateTo('library')
+  }
+
+  if (e.ctrlKey && e.key === 'n') {
+    e.preventDefault()
+    navigateTo('add-book')
+  }
+
+  if (e.ctrlKey && e.key === 'f') {
+    e.preventDefault()
+    navigateTo('library')
+    document.getElementById('library-search').focus()
+  }
+
+  if (e.ctrlKey && e.key === ',') {
+    e.preventDefault()
+    navigateTo('filter')
+  }
 })
 
 // INITIAL LOAD
