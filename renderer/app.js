@@ -109,14 +109,85 @@ document.getElementById('btn-add-book').addEventListener('click', async () => {
   document.getElementById('add-book').querySelector('h2').textContent = 'Add a Book'
 })
 
-// LOAD LIBRARY
+// LIBRARY
+let allBooks = []
+
 async function loadLibrary() {
-  const books = await window.api.books.getAll()
+  allBooks = await window.api.books.getAll()
+  applyFiltersAndSearch()
+}
+
+function applyFiltersAndSearch() {
+  const query = document.getElementById('library-search').value.toLowerCase().trim()
+  const statusFilter = document.getElementById('filter-status').value
+  const formatFilter = document.getElementById('filter-format').value
+  const genreFilter = document.getElementById('filter-genre').value.toLowerCase().trim()
+  const tagsFilter = document.getElementById('filter-tags').value.toLowerCase().trim()
+  const ratingFilter = document.getElementById('filter-rating').value
+
+  let filtered = allBooks
+
+  if (query) {
+    filtered = filtered.filter(b =>
+      b.title.toLowerCase().includes(query) ||
+      b.author.toLowerCase().includes(query)
+    )
+  }
+
+  if (statusFilter) {
+    filtered = filtered.filter(b => b.status === statusFilter)
+  }
+
+  if (formatFilter) {
+    filtered = filtered.filter(b => b.format === formatFilter)
+  }
+
+  if (genreFilter) {
+    filtered = filtered.filter(b =>
+      b.genre && b.genre.toLowerCase().includes(genreFilter)
+    )
+  }
+
+  if (tagsFilter) {
+    filtered = filtered.filter(b =>
+      b.tags && b.tags.toLowerCase().includes(tagsFilter)
+    )
+  }
+
+  if (ratingFilter) {
+    filtered = filtered.filter(b => b.rating >= parseInt(ratingFilter))
+  }
+
+  renderLibrary(filtered)
+}
+
+// FILTER CONTROLS
+document.getElementById('library-search').addEventListener('input', () => {
+  applyFiltersAndSearch()
+})
+
+document.getElementById('btn-apply-filters').addEventListener('click', () => {
+  navigateTo('library')
+  applyFiltersAndSearch()
+})
+
+document.getElementById('btn-clear-filters').addEventListener('click', () => {
+  document.getElementById('filter-status').value = ''
+  document.getElementById('filter-format').value = ''
+  document.getElementById('filter-genre').value = ''
+  document.getElementById('filter-tags').value = ''
+  document.getElementById('filter-rating').value = ''
+  document.getElementById('library-search').value = ''
+  navigateTo('library')
+  applyFiltersAndSearch()
+})
+
+function renderLibrary(books) {
   const grid = document.getElementById('book-grid')
   grid.innerHTML = ''
 
   if (books.length === 0) {
-    grid.innerHTML = '<p style="color: var(--text-muted)">No books yet. Add one!</p>'
+    grid.innerHTML = '<p style="color: var(--text-muted)">No books match your search.</p>'
     return
   }
 
@@ -124,7 +195,7 @@ async function loadLibrary() {
     const card = document.createElement('div')
     card.className = 'book-card'
     card.innerHTML = `
-      <img src="${book.cover_url || ''}" 
+      <img src="${book.cover_url || ''}"
         onerror="this.style.display='none'"
         alt="${book.title}">
       <div class="book-title">${book.title}</div>

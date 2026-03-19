@@ -361,3 +361,26 @@ body {
   background-color: var(--accent);
   color: white;
 }
+
+/* LIBRARY CONTROLS */
+#library-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+#library-search {
+  flex: 1;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--bg-card);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+#library-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
