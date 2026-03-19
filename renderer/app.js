@@ -20,6 +20,7 @@ navButtons.forEach(btn => {
 // STATE
 let currentBookId = null
 let editingBookId = null
+let allBooks = []
 
 // API SEARCH
 document.getElementById('btn-api-search').addEventListener('click', async () => {
@@ -81,7 +82,10 @@ document.getElementById('btn-add-book').addEventListener('click', async () => {
     series_name: document.getElementById('input-series-name').value || null,
     series_order: document.getElementById('input-series-order').value || null,
     rating: document.getElementById('input-rating').value || null,
-    date_finished: null,
+    date_started: document.getElementById('input-date-started').value || null,
+    date_finished: document.getElementById('input-date-finished').value || null,
+    current_page: document.getElementById('input-current-page').value || null,
+    total_pages: document.getElementById('input-total-pages').value || null,
     notes: document.getElementById('input-notes').value
   }
 
@@ -110,8 +114,6 @@ document.getElementById('btn-add-book').addEventListener('click', async () => {
 })
 
 // LIBRARY
-let allBooks = []
-
 async function loadLibrary() {
   allBooks = await window.api.books.getAll()
   applyFiltersAndSearch()
@@ -161,27 +163,6 @@ function applyFiltersAndSearch() {
   renderLibrary(filtered)
 }
 
-// FILTER CONTROLS
-document.getElementById('library-search').addEventListener('input', () => {
-  applyFiltersAndSearch()
-})
-
-document.getElementById('btn-apply-filters').addEventListener('click', () => {
-  navigateTo('library')
-  applyFiltersAndSearch()
-})
-
-document.getElementById('btn-clear-filters').addEventListener('click', () => {
-  document.getElementById('filter-status').value = ''
-  document.getElementById('filter-format').value = ''
-  document.getElementById('filter-genre').value = ''
-  document.getElementById('filter-tags').value = ''
-  document.getElementById('filter-rating').value = ''
-  document.getElementById('library-search').value = ''
-  navigateTo('library')
-  applyFiltersAndSearch()
-})
-
 function renderLibrary(books) {
   const grid = document.getElementById('book-grid')
   grid.innerHTML = ''
@@ -207,6 +188,27 @@ function renderLibrary(books) {
     grid.appendChild(card)
   })
 }
+
+// FILTER CONTROLS
+document.getElementById('library-search').addEventListener('input', () => {
+  applyFiltersAndSearch()
+})
+
+document.getElementById('btn-apply-filters').addEventListener('click', () => {
+  navigateTo('library')
+  applyFiltersAndSearch()
+})
+
+document.getElementById('btn-clear-filters').addEventListener('click', () => {
+  document.getElementById('filter-status').value = ''
+  document.getElementById('filter-format').value = ''
+  document.getElementById('filter-genre').value = ''
+  document.getElementById('filter-tags').value = ''
+  document.getElementById('filter-rating').value = ''
+  document.getElementById('library-search').value = ''
+  navigateTo('library')
+  applyFiltersAndSearch()
+})
 
 // DETAIL VIEW
 function showDetail(book) {
@@ -245,12 +247,24 @@ function showDetail(book) {
         <span class="meta-badge">${starsHTML}</span>
       </div>
       <div class="meta-row">
+        ${book.date_started ? `<span class="meta-badge">Started: ${book.date_started}</span>` : ''}
+        ${book.date_finished ? `<span class="meta-badge">Finished: ${book.date_finished}</span>` : ''}
+      </div>
+      <div class="meta-row">
         ${book.genre ? `<span class="meta-badge">${book.genre}</span>` : ''}
         ${tagsHTML}
       </div>
       <div class="meta-row">
         ${seriesHTML}
       </div>
+      ${book.status === 'reading' && book.current_page ? `
+        <div class="progress-container">
+          <div class="progress-bar" style="width: ${book.total_pages ? Math.round((book.current_page / book.total_pages) * 100) : 0}%"></div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted)">
+          Page ${book.current_page}${book.total_pages ? ` of ${book.total_pages} (${Math.round((book.current_page / book.total_pages) * 100)}%)` : ''}
+        </div>
+      ` : ''}
       <div class="detail-actions">
         <button class="btn-primary" id="btn-edit">Edit Book</button>
         <button class="btn-danger" id="btn-delete">Delete Book</button>
@@ -291,6 +305,10 @@ function populateEditForm(book) {
   document.getElementById('input-status').value = book.status || 'want'
   document.getElementById('input-format').value = book.format || 'physical'
   document.getElementById('input-rating').value = book.rating || ''
+  document.getElementById('input-date-started').value = book.date_started || ''
+  document.getElementById('input-date-finished').value = book.date_finished || ''
+  document.getElementById('input-current-page').value = book.current_page || ''
+  document.getElementById('input-total-pages').value = book.total_pages || ''
   document.getElementById('input-notes').value = book.notes || ''
 
   document.getElementById('btn-add-book').textContent = 'Save Changes'

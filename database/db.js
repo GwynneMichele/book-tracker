@@ -24,11 +24,28 @@ db.exec(`
   )
 `)
 
+// Add new columns if they don't exist yet
+const columns = db.prepare("PRAGMA table_info(books)").all().map(c => c.name)
+
+if (!columns.includes('date_started')) {
+  db.exec("ALTER TABLE books ADD COLUMN date_started TEXT")
+}
+if (!columns.includes('current_page')) {
+  db.exec("ALTER TABLE books ADD COLUMN current_page INTEGER")
+}
+if (!columns.includes('total_pages')) {
+  db.exec("ALTER TABLE books ADD COLUMN total_pages INTEGER")
+}
+
 module.exports = {
   addBook: (book) => {
     const stmt = db.prepare(`
-      INSERT INTO books (title, author, cover_url, status, format, genre, tags, series_name, series_order, rating, date_finished, notes)
-      VALUES (@title, @author, @cover_url, @status, @format, @genre, @tags, @series_name, @series_order, @rating, @date_finished, @notes)
+      INSERT INTO books (title, author, cover_url, status, format, genre, tags,
+        series_name, series_order, rating, date_started, date_finished,
+        current_page, total_pages, notes)
+      VALUES (@title, @author, @cover_url, @status, @format, @genre, @tags,
+        @series_name, @series_order, @rating, @date_started, @date_finished,
+        @current_page, @total_pages, @notes)
     `)
     return stmt.run(book)
   },
@@ -50,7 +67,10 @@ module.exports = {
         series_name = @series_name,
         series_order = @series_order,
         rating = @rating,
+        date_started = @date_started,
         date_finished = @date_finished,
+        current_page = @current_page,
+        total_pages = @total_pages,
         notes = @notes
       WHERE id = @id
     `)
