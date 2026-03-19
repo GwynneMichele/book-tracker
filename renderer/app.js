@@ -1,5 +1,3 @@
-
-
 // NAVIGATION
 const navButtons = document.querySelectorAll('.nav-btn')
 const views = document.querySelectorAll('.view')
@@ -18,6 +16,10 @@ navButtons.forEach(btn => {
     navigateTo(btn.dataset.view)
   })
 })
+
+// STATE
+let currentBookId = null
+let editingBookId = null
 
 // API SEARCH
 document.getElementById('btn-api-search').addEventListener('click', async () => {
@@ -66,7 +68,7 @@ document.getElementById('api-search-input').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('btn-api-search').click()
 })
 
-// ADD BOOK
+// ADD / EDIT BOOK
 document.getElementById('btn-add-book').addEventListener('click', async () => {
   const book = {
     title: document.getElementById('input-title').value,
@@ -88,14 +90,23 @@ document.getElementById('btn-add-book').addEventListener('click', async () => {
     return
   }
 
-  await window.api.books.add(book)
-  loadLibrary()
+  if (editingBookId) {
+    await window.api.books.update(editingBookId, book)
+    const updatedBook = await window.api.books.get(editingBookId)
+    editingBookId = null
+    loadLibrary()
+    showDetail(updatedBook)
+  } else {
+    await window.api.books.add(book)
+    loadLibrary()
+    navigateTo('library')
+  }
 
   document.querySelectorAll('#add-book input, #add-book textarea').forEach(el => el.value = '')
   document.getElementById('input-status').value = 'want'
   document.getElementById('input-format').value = 'physical'
-
-  navigateTo('library')
+  document.getElementById('btn-add-book').textContent = 'Add Book'
+  document.getElementById('add-book').querySelector('h2').textContent = 'Add a Book'
 })
 
 // LOAD LIBRARY
@@ -127,8 +138,6 @@ async function loadLibrary() {
 }
 
 // DETAIL VIEW
-let currentBookId = null
-
 function showDetail(book) {
   currentBookId = book.id
 
@@ -151,7 +160,7 @@ function showDetail(book) {
     : 'Not rated'
 
   const notesHTML = book.notes
-    ? marked(book.notes)
+    ? marked.parse(book.notes)
     : '<p style="color: var(--text-muted)">No notes yet.</p>'
 
   document.getElementById('detail-content').innerHTML = `
@@ -172,6 +181,7 @@ function showDetail(book) {
         ${seriesHTML}
       </div>
       <div class="detail-actions">
+        <button class="btn-primary" id="btn-edit">Edit Book</button>
         <button class="btn-danger" id="btn-delete">Delete Book</button>
       </div>
     </div>
@@ -180,6 +190,10 @@ function showDetail(book) {
       <div id="detail-notes-content">${notesHTML}</div>
     </div>
   `
+
+  document.getElementById('btn-edit').addEventListener('click', () => {
+    populateEditForm(book)
+  })
 
   document.getElementById('btn-delete').addEventListener('click', async () => {
     if (confirm(`Delete "${book.title}"? This cannot be undone.`)) {
@@ -190,6 +204,28 @@ function showDetail(book) {
   })
 
   navigateTo('detail')
+}
+
+// EDIT FORM
+function populateEditForm(book) {
+  editingBookId = book.id
+
+  document.getElementById('input-title').value = book.title || ''
+  document.getElementById('input-author').value = book.author || ''
+  document.getElementById('input-cover-url').value = book.cover_url || ''
+  document.getElementById('input-genre').value = book.genre || ''
+  document.getElementById('input-tags').value = book.tags || ''
+  document.getElementById('input-series-name').value = book.series_name || ''
+  document.getElementById('input-series-order').value = book.series_order || ''
+  document.getElementById('input-status').value = book.status || 'want'
+  document.getElementById('input-format').value = book.format || 'physical'
+  document.getElementById('input-rating').value = book.rating || ''
+  document.getElementById('input-notes').value = book.notes || ''
+
+  document.getElementById('btn-add-book').textContent = 'Save Changes'
+  document.getElementById('add-book').querySelector('h2').textContent = 'Edit Book'
+
+  navigateTo('add-book')
 }
 
 document.getElementById('btn-back').addEventListener('click', () => {
