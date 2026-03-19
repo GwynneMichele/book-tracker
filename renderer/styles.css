@@ -1,0 +1,164 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-card: #0f3460;
+  --accent: #e94560;
+  --text-primary: #eaeaea;
+  --text-muted: #a0a0b0;
+  --sidebar-width: 220px;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+#sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+#sidebar h1 {
+  font-size: 1.2rem;
+  color: var(--accent);
+  margin-bottom: 24px;
+  letter-spacing: 0.05em;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.nav-btn.active {
+  background-color: var(--accent);
+  color: white;
+}
+
+/* MAIN CONTENT */
+#main {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+/* BOOK CARDS */
+#book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.book-card {
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+}
+
+.book-card img {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-radius: 4px;
+  background-color: var(--bg-secondary);
+}
+
+.book-card .book-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.book-card .book-author {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* VIEWS */
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+/* FORM */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--bg-card);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.form-group textarea {
+  min-height: 150px;
+  resize: vertical;
+  font-family: 'Courier New', monospace;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}

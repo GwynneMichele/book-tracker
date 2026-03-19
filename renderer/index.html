@@ -2,11 +2,92 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" 
+      content="default-src 'self'; img-src 'self' https:; script-src 'self'">
     <title>Book Tracker</title>
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <h1>Book Tracker</h1>
-    <p id="version"></p>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+      <h1>📚 Book Tracker</h1>
+      <button class="nav-btn active" data-view="library">Library</button>
+      <button class="nav-btn" data-view="add-book">Add Book</button>
+      <button class="nav-btn" data-view="search">Search</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main">
+
+      <!-- LIBRARY VIEW -->
+      <div id="library" class="view active">
+        <h2>My Library</h2>
+        <div id="book-grid"></div>
+      </div>
+
+      <!-- ADD BOOK VIEW -->
+      <div id="add-book" class="view">
+        <h2>Add a Book</h2>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="input-title">
+        </div>
+        <div class="form-group">
+          <label>Author</label>
+          <input type="text" id="input-author">
+        </div>
+        <div class="form-group">
+          <label>Genre</label>
+          <input type="text" id="input-genre">
+        </div>
+        <div class="form-group">
+          <label>Tags (comma separated)</label>
+          <input type="text" id="input-tags">
+        </div>
+        <div class="form-group">
+          <label>Series Name</label>
+          <input type="text" id="input-series-name">
+        </div>
+        <div class="form-group">
+          <label>Series Order</label>
+          <input type="number" id="input-series-order">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="input-status">
+            <option value="want">Want to Read</option>
+            <option value="reading">Currently Reading</option>
+            <option value="finished">Finished</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Format</label>
+          <select id="input-format">
+            <option value="physical">Physical</option>
+            <option value="digital">Digital</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Rating (1-5)</label>
+          <input type="number" id="input-rating" min="1" max="5">
+        </div>
+        <div class="form-group">
+          <label>Notes (Markdown supported)</label>
+          <textarea id="input-notes"></textarea>
+        </div>
+        <button class="btn-primary" id="btn-add-book">Add Book</button>
+      </div>
+
+      <!-- SEARCH VIEW -->
+      <div id="search" class="view">
+        <h2>Search</h2>
+        <p style="color: var(--text-muted)">Coming soon.</p>
+      </div>
+
+    </div>
+
     <script src="app.js"></script>
   </body>
 </html>
