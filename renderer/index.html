@@ -26,6 +26,13 @@
       <div id="library" class="view active">
         <div id="library-controls">
           <input type="text" id="library-search" placeholder="Search by title or author...">
+          <select id="sort-select">
+            <option value="date_added_desc">Date Added (newest)</option>
+            <option value="date_added_asc">Date Added (oldest)</option>
+            <option value="title_asc">Title (A–Z)</option>
+            <option value="author_asc">Author (A–Z)</option>
+            <option value="rating_desc">Rating (highest)</option>
+          </select>
           <button class="nav-btn" data-view="filter">Filter ▾</button>
         </div>
         <div id="book-grid"></div>

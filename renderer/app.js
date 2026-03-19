@@ -126,6 +126,7 @@ function applyFiltersAndSearch() {
   const genreFilter = document.getElementById('filter-genre').value.toLowerCase().trim()
   const tagsFilter = document.getElementById('filter-tags').value.toLowerCase().trim()
   const ratingFilter = document.getElementById('filter-rating').value
+  const sortValue = document.getElementById('sort-select').value
 
   let filtered = allBooks
 
@@ -160,6 +161,22 @@ function applyFiltersAndSearch() {
     filtered = filtered.filter(b => b.rating >= parseInt(ratingFilter))
   }
 
+  filtered.sort((a, b) => {
+    switch (sortValue) {
+      case 'date_added_asc':
+        return (a.date_added || '').localeCompare(b.date_added || '')
+      case 'title_asc':
+        return a.title.localeCompare(b.title)
+      case 'author_asc':
+        return a.author.localeCompare(b.author)
+      case 'rating_desc':
+        return (b.rating || 0) - (a.rating || 0)
+      case 'date_added_desc':
+      default:
+        return (b.date_added || '').localeCompare(a.date_added || '')
+    }
+  })
+
   renderLibrary(filtered)
 }
 
@@ -191,6 +208,10 @@ function renderLibrary(books) {
 
 // FILTER CONTROLS
 document.getElementById('library-search').addEventListener('input', () => {
+  applyFiltersAndSearch()
+})
+
+document.getElementById('sort-select').addEventListener('change', () => {
   applyFiltersAndSearch()
 })
 

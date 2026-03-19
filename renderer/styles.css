@@ -401,3 +401,18 @@ body {
   border-radius: 3px;
   transition: width 0.3s ease;
 }
+
+#sort-select {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--bg-card);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+#sort-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
