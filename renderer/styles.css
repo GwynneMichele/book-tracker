@@ -220,3 +220,144 @@ body {
   text-align: center;
   padding: 8px;
 }
+
+/* DETAIL VIEW */
+#btn-back {
+  margin-bottom: 24px;
+}
+
+#detail-content {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 32px;
+}
+
+#detail-cover {
+  width: 200px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+#detail-cover-placeholder {
+  width: 200px;
+  aspect-ratio: 2/3;
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 16px;
+}
+
+#detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#detail-meta h2 {
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
+
+#detail-meta .author {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.meta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.meta-badge {
+  background-color: var(--bg-card);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.meta-badge.accent {
+  background-color: var(--accent);
+  color: white;
+}
+
+#detail-notes {
+  margin-top: 32px;
+  grid-column: 1 / -1;
+}
+
+#detail-notes h3 {
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+#detail-notes-content {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 24px;
+  line-height: 1.7;
+}
+
+#detail-notes-content h1,
+#detail-notes-content h2,
+#detail-notes-content h3 {
+  margin: 16px 0 8px;
+  color: var(--text-primary);
+}
+
+#detail-notes-content p {
+  margin-bottom: 12px;
+  color: var(--text-muted);
+}
+
+#detail-notes-content ul,
+#detail-notes-content ol {
+  margin: 0 0 12px 24px;
+  color: var(--text-muted);
+}
+
+#detail-notes-content strong {
+  color: var(--text-primary);
+}
+
+#detail-notes-content em {
+  color: var(--accent);
+}
+
+#detail-notes-content code {
+  background-color: var(--bg-card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn-danger {
+  background-color: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn-danger:hover {
+  background-color: var(--accent);
+  color: white;
+}

@@ -1,16 +1,21 @@
+
+
 // NAVIGATION
 const navButtons = document.querySelectorAll('.nav-btn')
 const views = document.querySelectorAll('.view')
 
+function navigateTo(viewName) {
+  navButtons.forEach(b => b.classList.remove('active'))
+  views.forEach(v => v.classList.remove('active'))
+  document.getElementById(viewName).classList.add('active')
+
+  const matchingBtn = document.querySelector(`[data-view="${viewName}"]`)
+  if (matchingBtn) matchingBtn.classList.add('active')
+}
+
 navButtons.forEach(btn => {
   btn.addEventListener('click', () => {
-    const target = btn.dataset.view
-
-    navButtons.forEach(b => b.classList.remove('active'))
-    views.forEach(v => v.classList.remove('active'))
-
-    btn.classList.add('active')
-    document.getElementById(target).classList.add('active')
+    navigateTo(btn.dataset.view)
   })
 })
 
@@ -57,7 +62,6 @@ document.getElementById('btn-api-search').addEventListener('click', async () => 
   })
 })
 
-// Also allow pressing Enter in the search box
 document.getElementById('api-search-input').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('btn-api-search').click()
 })
@@ -87,16 +91,11 @@ document.getElementById('btn-add-book').addEventListener('click', async () => {
   await window.api.books.add(book)
   loadLibrary()
 
-  // Clear the form
   document.querySelectorAll('#add-book input, #add-book textarea').forEach(el => el.value = '')
   document.getElementById('input-status').value = 'want'
   document.getElementById('input-format').value = 'physical'
 
-  // Switch to library view
-  navButtons.forEach(b => b.classList.remove('active'))
-  views.forEach(v => v.classList.remove('active'))
-  document.querySelector('[data-view="library"]').classList.add('active')
-  document.getElementById('library').classList.add('active')
+  navigateTo('library')
 })
 
 // LOAD LIBRARY
@@ -120,9 +119,82 @@ async function loadLibrary() {
       <div class="book-title">${book.title}</div>
       <div class="book-author">${book.author}</div>
     `
+    card.addEventListener('click', () => {
+      showDetail(book)
+    })
     grid.appendChild(card)
   })
 }
 
-// Initial load
+// DETAIL VIEW
+let currentBookId = null
+
+function showDetail(book) {
+  currentBookId = book.id
+
+  const coverHTML = book.cover_url
+    ? `<img id="detail-cover" src="${book.cover_url}" alt="${book.title}">`
+    : `<div id="detail-cover-placeholder">No Cover</div>`
+
+  const seriesHTML = book.series_name
+    ? `<span class="meta-badge">${book.series_name} #${book.series_order || '?'}</span>`
+    : ''
+
+  const tagsHTML = book.tags
+    ? book.tags.split(',').map(t =>
+        `<span class="meta-badge">${t.trim()}</span>`
+      ).join('')
+    : ''
+
+  const starsHTML = book.rating
+    ? '★'.repeat(book.rating) + '☆'.repeat(5 - book.rating)
+    : 'Not rated'
+
+  const notesHTML = book.notes
+    ? marked(book.notes)
+    : '<p style="color: var(--text-muted)">No notes yet.</p>'
+
+  document.getElementById('detail-content').innerHTML = `
+    ${coverHTML}
+    <div id="detail-meta">
+      <h2>${book.title}</h2>
+      <div class="author">${book.author}</div>
+      <div class="meta-row">
+        <span class="meta-badge accent">${book.status}</span>
+        <span class="meta-badge">${book.format}</span>
+        <span class="meta-badge">${starsHTML}</span>
+      </div>
+      <div class="meta-row">
+        ${book.genre ? `<span class="meta-badge">${book.genre}</span>` : ''}
+        ${tagsHTML}
+      </div>
+      <div class="meta-row">
+        ${seriesHTML}
+      </div>
+      <div class="detail-actions">
+        <button class="btn-danger" id="btn-delete">Delete Book</button>
+      </div>
+    </div>
+    <div id="detail-notes">
+      <h3>Notes</h3>
+      <div id="detail-notes-content">${notesHTML}</div>
+    </div>
+  `
+
+  document.getElementById('btn-delete').addEventListener('click', async () => {
+    if (confirm(`Delete "${book.title}"? This cannot be undone.`)) {
+      await window.api.books.delete(book.id)
+      navigateTo('library')
+      loadLibrary()
+    }
+  })
+
+  navigateTo('detail')
+}
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  navigateTo('library')
+})
+
+// INITIAL LOAD
 loadLibrary()

@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" 
-  content="default-src 'self'; img-src 'self' https:; script-src 'self'; connect-src https://openlibrary.org https://covers.openlibrary.org">
+  content="default-src 'self'; img-src 'self' https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src https://openlibrary.org https://covers.openlibrary.org">
     <title>Book Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="../node_modules/marked/lib/marked.umd.js"></script>
   </head>
   <body>
 
@@ -107,6 +108,12 @@
         <h2>Search</h2>
         <p style="color: var(--text-muted)">Coming soon.</p>
       </div>
+
+      <!-- DETAIL VIEW -->
+<div id="detail" class="view">
+  <button class="nav-btn" id="btn-back">← Back to Library</button>
+  <div id="detail-content"></div>
+</div>
 
     </div>
 
