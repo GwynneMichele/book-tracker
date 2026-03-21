@@ -17,6 +17,7 @@
       <button class="nav-btn" data-view="add-book">Add Book</button>
       <button class="nav-btn" data-view="filter">Filter</button>
       <button class="nav-btn" data-view="stats">Stats</button>
+      <button class="nav-btn" data-view="importexport">Import / Export</button>
       <button class="nav-btn" data-view="search">Search</button>
     </div>
 
@@ -109,21 +110,21 @@
           <input type="number" id="input-rating" min="1" max="5">
         </div>
         <div class="form-group">
-  <label>Date Started</label>
-  <input type="date" id="input-date-started">
-</div>
-<div class="form-group">
-  <label>Date Finished</label>
-  <input type="date" id="input-date-finished">
-</div>
-<div class="form-group">
-  <label>Total Pages</label>
-  <input type="number" id="input-total-pages" min="1">
-</div>
-<div class="form-group" id="current-page-group">
-  <label>Current Page</label>
-  <input type="number" id="input-current-page" min="1">
-</div>
+          <label>Date Started</label>
+          <input type="date" id="input-date-started">
+        </div>
+        <div class="form-group">
+          <label>Date Finished</label>
+          <input type="date" id="input-date-finished">
+        </div>
+        <div class="form-group">
+          <label>Total Pages</label>
+          <input type="number" id="input-total-pages" min="1">
+        </div>
+        <div class="form-group">
+          <label>Current Page</label>
+          <input type="number" id="input-current-page" min="1">
+        </div>
         <div class="form-group">
           <label>Notes (Markdown supported)</label>
           <textarea id="input-notes"></textarea>
@@ -187,6 +188,35 @@
       <div id="stats" class="view">
         <h2>My Reading Stats</h2>
         <div id="stats-content"></div>
+      </div>
+
+      <!-- IMPORT/EXPORT VIEW -->
+      <div id="importexport" class="view">
+        <h2>Import / Export</h2>
+
+        <div class="stats-card" style="max-width: 500px; margin-bottom: 20px;">
+          <h3>Export Library</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+            Save your entire library to a file on your computer.
+          </p>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn-primary" id="btn-export-json">Export as JSON</button>
+            <button class="btn-primary" id="btn-export-csv">Export as CSV</button>
+          </div>
+          <p id="export-status" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);"></p>
+        </div>
+
+        <div class="stats-card" style="max-width: 500px;">
+          <h3>Import Library</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 4px;">
+            Import books from a previously exported JSON file.
+          </p>
+          <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 16px;">
+            Note: this adds to your existing library, it does not replace it.
+          </p>
+          <button class="btn-primary" id="btn-import-json">Import from JSON</button>
+          <p id="import-status" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);"></p>
+        </div>
       </div>
 
       <!-- SEARCH VIEW -->

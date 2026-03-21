@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const fetch = require('node-fetch')
+const fs = require('fs')
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -51,6 +52,60 @@ app.whenReady().then(() => {
         : null,
       olid: book.key
     }))
+  })
+
+  ipcMain.handle('export:json', async (event, data) => {
+    const { filePath, canceled } = await dialog.showSaveDialog({
+      title: 'Export Library',
+      defaultPath: 'book-tracker-export.json',
+      filters: [{ name: 'JSON', extensions: ['json'] }]
+    })
+
+    if (canceled || !filePath) return { success: false }
+
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+    return { success: true, filePath }
+  })
+
+  ipcMain.handle('export:csv', async (event, data) => {
+    const { filePath, canceled } = await dialog.showSaveDialog({
+      title: 'Export Library as CSV',
+      defaultPath: 'book-tracker-export.csv',
+      filters: [{ name: 'CSV', extensions: ['csv'] }]
+    })
+
+    if (canceled || !filePath) return { success: false }
+
+    const headers = [
+      'title', 'author', 'status', 'format', 'genre', 'tags',
+      'series_name', 'series_order', 'rating', 'date_started',
+      'date_finished', 'current_page', 'total_pages', 'date_added', 'notes'
+    ]
+
+    const rows = data.map(book =>
+      headers.map(h => {
+        const val = book[h] || ''
+        return `"${String(val).replace(/"/g, '""')}"`
+      }).join(',')
+    )
+
+    const csv = [headers.join(','), ...rows].join('\n')
+    fs.writeFileSync(filePath, csv)
+    return { success: true, filePath }
+  })
+
+  ipcMain.handle('import:json', async () => {
+    const { filePaths, canceled } = await dialog.showOpenDialog({
+      title: 'Import Library',
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+      properties: ['openFile']
+    })
+
+    if (canceled || !filePaths.length) return { success: false }
+
+    const raw = fs.readFileSync(filePaths[0], 'utf-8')
+    const books = JSON.parse(raw)
+    return { success: true, books }
   })
 
   createWindow()

@@ -21,8 +21,8 @@ navButtons.forEach(btn => {
 
 // STATE
 let currentBookId = null
-let editingBookId = null
 let currentBook = null
+let editingBookId = null
 let allBooks = []
 
 // API SEARCH
@@ -371,7 +371,6 @@ function renderStats() {
     ? (ratedBooks.reduce((sum, b) => sum + parseInt(b.rating), 0) / ratedBooks.length).toFixed(1)
     : 'N/A'
 
-  // Top genres
   const genreCounts = {}
   allBooks.forEach(b => {
     if (b.genre) {
@@ -383,7 +382,6 @@ function renderStats() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
 
-  // Top tags
   const tagCounts = {}
   allBooks.forEach(b => {
     if (b.tags) {
@@ -472,6 +470,60 @@ function renderStats() {
     </div>
   `
 }
+
+// IMPORT / EXPORT
+document.getElementById('btn-export-json').addEventListener('click', async () => {
+  const status = document.getElementById('export-status')
+  const result = await window.api.io.exportJson(allBooks)
+  if (result.success) {
+    status.textContent = `Exported successfully to ${result.filePath}`
+    status.style.color = 'var(--accent)'
+  } else {
+    status.textContent = 'Export cancelled.'
+    status.style.color = 'var(--text-muted)'
+  }
+})
+
+document.getElementById('btn-export-csv').addEventListener('click', async () => {
+  const status = document.getElementById('export-status')
+  const result = await window.api.io.exportCsv(allBooks)
+  if (result.success) {
+    status.textContent = `Exported successfully to ${result.filePath}`
+    status.style.color = 'var(--accent)'
+  } else {
+    status.textContent = 'Export cancelled.'
+    status.style.color = 'var(--text-muted)'
+  }
+})
+
+document.getElementById('btn-import-json').addEventListener('click', async () => {
+  const status = document.getElementById('import-status')
+  const result = await window.api.io.importJson()
+
+  if (!result.success) {
+    status.textContent = 'Import cancelled.'
+    status.style.color = 'var(--text-muted)'
+    return
+  }
+
+  const books = result.books
+  let imported = 0
+  let skipped = 0
+
+  for (const book of books) {
+    if (!book.title || !book.author) {
+      skipped++
+      continue
+    }
+    const { id, date_added, ...bookData } = book
+    await window.api.books.add(bookData)
+    imported++
+  }
+
+  await loadLibrary()
+  status.textContent = `Imported ${imported} books.${skipped ? ` Skipped ${skipped} invalid entries.` : ''}`
+  status.style.color = 'var(--accent)'
+})
 
 // KEYBOARD SHORTCUTS
 document.addEventListener('keydown', (e) => {
