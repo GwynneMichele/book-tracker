@@ -1,21 +1,45 @@
 {
   "name": "book-tracker",
   "version": "1.0.0",
-  "description": "",
+  "description": "A personal book tracking app",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gwynne Montgomery",
   "license": "ISC",
   "type": "commonjs",
+  "build": {
+    "appId": "com.gwynne.booktracker",
+    "productName": "Book Tracker",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "database/db.js",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
   "devDependencies": {
-    "electron": "^41.0.3"
+    "electron": "^41.0.3",
+    "electron-builder": "^25.1.8"
   },
   "dependencies": {
-    "better-sqlite3": "^12.8.0",
-    "marked": "^17.0.4",
+    "better-sqlite3": "^11.7.0",
+    "marked": "^15.0.7",
     "node-fetch": "^2.7.0"
   }
 }
