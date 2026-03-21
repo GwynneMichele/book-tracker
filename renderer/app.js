@@ -9,6 +9,8 @@ function navigateTo(viewName) {
 
   const matchingBtn = document.querySelector(`[data-view="${viewName}"]`)
   if (matchingBtn) matchingBtn.classList.add('active')
+
+  if (viewName === 'stats') renderStats()
 }
 
 navButtons.forEach(btn => {
@@ -343,6 +345,133 @@ function populateEditForm(book) {
 document.getElementById('btn-back').addEventListener('click', () => {
   navigateTo('library')
 })
+
+// STATS
+function renderStats() {
+  const total = allBooks.length
+  const finished = allBooks.filter(b => b.status === 'finished').length
+  const reading = allBooks.filter(b => b.status === 'reading').length
+  const want = allBooks.filter(b => b.status === 'want').length
+
+  const physical = allBooks.filter(b => b.format === 'physical').length
+  const digital = allBooks.filter(b => b.format === 'digital').length
+  const both = allBooks.filter(b => b.format === 'both').length
+
+  const thisYear = new Date().getFullYear().toString()
+  const finishedThisYear = allBooks.filter(b =>
+    b.status === 'finished' && b.date_finished && b.date_finished.startsWith(thisYear)
+  ).length
+
+  const totalPages = allBooks
+    .filter(b => b.status === 'finished' && b.total_pages)
+    .reduce((sum, b) => sum + parseInt(b.total_pages), 0)
+
+  const ratedBooks = allBooks.filter(b => b.rating)
+  const avgRating = ratedBooks.length
+    ? (ratedBooks.reduce((sum, b) => sum + parseInt(b.rating), 0) / ratedBooks.length).toFixed(1)
+    : 'N/A'
+
+  // Top genres
+  const genreCounts = {}
+  allBooks.forEach(b => {
+    if (b.genre) {
+      const g = b.genre.trim()
+      genreCounts[g] = (genreCounts[g] || 0) + 1
+    }
+  })
+  const topGenres = Object.entries(genreCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+
+  // Top tags
+  const tagCounts = {}
+  allBooks.forEach(b => {
+    if (b.tags) {
+      b.tags.split(',').forEach(t => {
+        const tag = t.trim()
+        if (tag) tagCounts[tag] = (tagCounts[tag] || 0) + 1
+      })
+    }
+  })
+  const topTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+
+  document.getElementById('stats-content').innerHTML = `
+    <div class="stats-card">
+      <h3>Library Overview</h3>
+      <div style="text-align: center; padding: 8px 0 16px;">
+        <div class="big-number">${total}</div>
+        <div class="big-number-label">Total Books</div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Finished</span>
+        <span class="stat-value accent">${finished}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Currently Reading</span>
+        <span class="stat-value">${reading}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Want to Read</span>
+        <span class="stat-value">${want}</span>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <h3>Reading Activity</h3>
+      <div class="stat-row">
+        <span class="stat-label">Finished This Year</span>
+        <span class="stat-value accent">${finishedThisYear}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Total Pages Read</span>
+        <span class="stat-value">${totalPages.toLocaleString()}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Average Rating</span>
+        <span class="stat-value">${avgRating} ${avgRating !== 'N/A' ? '★' : ''}</span>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <h3>Format Breakdown</h3>
+      <div class="stat-row">
+        <span class="stat-label">Physical</span>
+        <span class="stat-value">${physical}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Digital</span>
+        <span class="stat-value">${digital}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Both</span>
+        <span class="stat-value">${both}</span>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <h3>Top Genres</h3>
+      ${topGenres.length ? topGenres.map(([genre, count]) => `
+        <div class="stat-row">
+          <span class="stat-label">${genre}</span>
+          <span class="stat-value">${count}</span>
+        </div>
+      `).join('') : '<p style="color: var(--text-muted); font-size: 0.9rem;">No genres recorded yet.</p>'}
+    </div>
+
+    <div class="stats-card">
+      <h3>Top Tags</h3>
+      ${topTags.length ? `
+        <div class="tag-cloud">
+          ${topTags.map(([tag, count]) => `
+            <span class="meta-badge">${tag} (${count})</span>
+          `).join('')}
+        </div>
+      ` : '<p style="color: var(--text-muted); font-size: 0.9rem;">No tags recorded yet.</p>'}
+    </div>
+  `
+}
 
 // KEYBOARD SHORTCUTS
 document.addEventListener('keydown', (e) => {
