@@ -2,7 +2,8 @@ const Database = require('better-sqlite3')
 const path = require('path')
 const { app } = require('electron')
 
-const dbPath = path.join(app.getPath('userData'), 'books.db')
+const dbName = app.isPackaged ? 'books.db' : 'books-dev.db'
+const dbPath = path.join(app.getPath('userData'), dbName)
 const db = new Database(dbPath)
 
 db.exec(`
